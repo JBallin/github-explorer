@@ -6,55 +6,63 @@ type GithubSearchState = {
     repos: Repo[];
     loading: boolean;
     error: Error | null;
+    totalResults: number;
 }
 
-const initialState: GithubSearchState = {
+type UseGithubSearchParams = {
+    query: string;
+    page: number;
+}
+
+const initialState: GithubSearchState = Object.freeze({
     repos: [],
     loading: false,
-    error: null
-}
+    error: null,
+    totalResults: 0
+});
 
-const useGithubSearch = (query: string) => {
+const useGithubSearch = ({ query, page }: UseGithubSearchParams) => {
     const [state, setState] = useState(initialState);
     
     useEffect(() => {
         if (!query) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
             setState(initialState);
             return;
         }
 
         const controller = new AbortController();
 
+        setState(prev => ({
+            ...prev,
+            loading: true,
+            error: null
+        }));
+
         const run = async () => {
-            setState(prev => ({
-                ...prev,
-                loading: true,
-                error: null
-            }));
             try {
-                const result = await searchRepos(query, controller.signal)
+                const result = await searchRepos({ query, signal: controller.signal, page })
                 
                 setState({
                     repos: result.items,
                     loading: false,
-                    error: null
+                    error: null,
+                    totalResults: result.total_count
                 })
             } catch (e) {
                 if (controller.signal.aborted) return;
 
-                setState({
-                    repos: [],
+                setState(prev => ({
+                    ...prev,
                     loading: false,
-                    error: e instanceof Error ? e : new Error('Unknown error')
-                });
+                    error: e instanceof Error ? e : new Error('Unknown error'),
+                }));
             }
         };
 
         void run();
 
         return () => controller.abort();
-    }, [query])
+    }, [query, page])
 
     return state;
 }

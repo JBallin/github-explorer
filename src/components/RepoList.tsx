@@ -8,7 +8,7 @@ type RepoListProps = {
 }
 
 function RepoList({ repos, loading, error }: RepoListProps) {
-    if (loading) {
+    if (loading && repos.length === 0) {
         return <p>Loading...</p>
     }
 

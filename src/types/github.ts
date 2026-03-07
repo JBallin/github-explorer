@@ -8,4 +8,5 @@ export type Repo = {
 
 export type SearchReposResponse = {
     items: Repo[];
+    total_count: number
 }

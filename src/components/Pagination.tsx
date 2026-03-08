@@ -1,4 +1,4 @@
-import { PAGE_SIZE } from "../api/github";
+import { PAGE_SIZE, RESULTS_LIMIT } from "../api/github";
 
 type PaginationProps = {
     page: number;
@@ -8,13 +8,23 @@ type PaginationProps = {
     loading: boolean;
 }
 
+const getButtonStyle = (disabled: boolean) => {
+    return {
+        padding: '6px 12px',
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        opacity: disabled ? .6 : 1
+    }
+}
+
 function Pagination({ page, totalResults, onPrevious, onNext, loading } : PaginationProps) {
-    const totalPages = Math.ceil(totalResults / PAGE_SIZE);
+    const totalPages = Math.min(Math.ceil(totalResults / PAGE_SIZE), Math.ceil(RESULTS_LIMIT / PAGE_SIZE));
     const prevDisabled = page === 1 || loading;
     const nextDisabled = page >= totalPages || loading;
 
     return (
         <div
+            role="navigation"
+            aria-label="Pagination"
             style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -22,30 +32,31 @@ function Pagination({ page, totalResults, onPrevious, onNext, loading } : Pagina
                 marginTop: 16,
             }}
         >
-            <span>Page {page} of {totalPages || 1}</span>
+            <span role="status" aria-live="polite">
+                Page {page} of {totalPages || 1}
+            </span>
             <button
                 onClick={onPrevious}
                 disabled={prevDisabled}
-                style={{
-                    padding: '6px 12px',
-                    cursor: prevDisabled ? 'not-allowed' : 'pointer',
-                    opacity: prevDisabled ? .6 : 1
-                }}
+                style={getButtonStyle(prevDisabled)}
+                aria-label="Go to previous page"
             >
                 Previous
             </button>
             <button
                 onClick={onNext}
                 disabled={nextDisabled}
-                style={{
-                    padding: '6px 12px',
-                    cursor: nextDisabled ? 'not-allowed' : 'pointer',
-                    opacity: nextDisabled ? .6 : 1
-                }}
+                style={getButtonStyle(nextDisabled)}
+                aria-label="Go to next page"
             >
                 Next
             </button>
-            {loading && <span style={{ marginLeft: 8 }}>Loading...</span>}
+            <span>Total results: {totalResults.toLocaleString()}</span>
+            {loading && (
+                <span role="status" aria-live="polite" style={{ marginLeft: 8 }}>
+                    Loading...
+                </span>
+            )}
         </div>
     )
 }

@@ -1,4 +1,4 @@
-import type { SearchReposResponse } from '../types/github';
+import type { SearchReposResponse, GithubErrorResponse } from '../types/github';
 
 type SearchReposParams = {
     query: string;
@@ -7,8 +7,18 @@ type SearchReposParams = {
 }
 
 export const PAGE_SIZE = 5;
+export const RESULTS_LIMIT = 1000;
 
 const API_BASE = 'https://api.github.com';
+
+async function tryParseGithubErrorMessage(res: Response): Promise<string | undefined> {
+    try {
+        const err = (await res.json()) as GithubErrorResponse;
+        return err.message;
+    } catch {
+        return undefined;
+    }
+}
 
 export async function searchRepos({ query, signal, page }: SearchReposParams): Promise<SearchReposResponse> {
     const res = await fetch(
@@ -16,9 +26,10 @@ export async function searchRepos({ query, signal, page }: SearchReposParams): P
         { signal }
     )
 
-    if (!res.ok) throw new Error(`GitHub API Error: ${res.status} ${res.statusText}`);
+    if (!res.ok) {
+        const message = await tryParseGithubErrorMessage(res);
+        throw new Error(`GitHub API Error: ${res.status} ${message ?? res.statusText}`)
+    }
 
-    const data: SearchReposResponse = await res.json();
-
-    return data;
+    return (await res.json()) as SearchReposResponse;
 }

@@ -9,15 +9,27 @@ type RepoListProps = {
 
 function RepoList({ repos, loading, error }: RepoListProps) {
     if (loading && repos.length === 0) {
-        return <p>Loading...</p>
+        return (
+            <p role="status" aria-live="polite">
+                Loading...
+            </p>
+        );
     }
 
     if (error) {
-        return <p>Error: {error.message}</p>
+        return (
+            <p role="alert" aria-live="assertive">
+                Error: {error.message}
+            </p>
+        );
     }
     
     if (repos.length === 0) {
-        return <p>No results</p>
+        return (
+            <p role="status" aria-live="polite">
+                Start typing to search
+            </p>
+        );
     }
 
     return (

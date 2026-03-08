@@ -14,3 +14,5 @@ export type SearchReposResponse = {
 export type GithubErrorResponse = {
     message?: string;
 }
+
+export type SortValue = 'best-match' | 'stars' | 'forks' | 'help-wanted-issues' | 'updated'

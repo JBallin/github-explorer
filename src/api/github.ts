@@ -1,9 +1,10 @@
-import type { SearchReposResponse, GithubErrorResponse } from '../types/github';
+import type { SearchReposResponse, GithubErrorResponse, SortValue } from '../types/github';
 
 type SearchReposParams = {
     query: string;
     signal?: AbortSignal;
     page: number;
+    sort: SortValue;
 }
 
 export const PAGE_SIZE = 5;
@@ -20,9 +21,9 @@ async function tryParseGithubErrorMessage(res: Response): Promise<string | undef
     }
 }
 
-export async function searchRepos({ query, signal, page }: SearchReposParams): Promise<SearchReposResponse> {
+export async function searchRepos({ query, signal, page, sort }: SearchReposParams): Promise<SearchReposResponse> {
     const res = await fetch(
-        `${API_BASE}/search/repositories?q=${encodeURIComponent(query)}&per_page=${PAGE_SIZE}&page=${page}`,
+        `${API_BASE}/search/repositories?q=${encodeURIComponent(query)}&per_page=${PAGE_SIZE}&page=${page}&sort=${sort}`,
         { signal }
     )
 

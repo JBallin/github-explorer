@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import type { Repo } from '../types/github';
+import type { Repo, SortValue } from '../types/github';
 import { searchRepos } from '../api/github';
 
 type GithubSearchState = {
@@ -12,6 +12,7 @@ type GithubSearchState = {
 type UseGithubSearchParams = {
     query: string;
     page: number;
+    sort: SortValue;
 }
 
 const initialState: GithubSearchState = Object.freeze({
@@ -21,7 +22,7 @@ const initialState: GithubSearchState = Object.freeze({
     totalResults: 0
 });
 
-const useGithubSearch = ({ query, page }: UseGithubSearchParams) => {
+const useGithubSearch = ({ query, page, sort }: UseGithubSearchParams) => {
     const [state, setState] = useState(initialState);
     
     useEffect(() => {
@@ -40,7 +41,7 @@ const useGithubSearch = ({ query, page }: UseGithubSearchParams) => {
 
         const run = async () => {
             try {
-                const result = await searchRepos({ query, signal: controller.signal, page })
+                const result = await searchRepos({ query, signal: controller.signal, page, sort })
                 
                 setState({
                     repos: result.items,
@@ -62,7 +63,7 @@ const useGithubSearch = ({ query, page }: UseGithubSearchParams) => {
         void run();
 
         return () => controller.abort();
-    }, [query, page])
+    }, [query, page, sort])
 
     return state;
 }

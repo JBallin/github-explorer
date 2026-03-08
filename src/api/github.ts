@@ -1,10 +1,11 @@
-import type { SearchReposResponse, GithubErrorResponse, SortValue } from '../types/github';
+import type { SearchReposResponse, GithubErrorResponse, SortValue, OrderValue } from '../types/github';
 
 type SearchReposParams = {
     query: string;
     signal?: AbortSignal;
     page: number;
     sort: SortValue;
+    order: OrderValue;
 }
 
 export const PAGE_SIZE = 5;
@@ -21,9 +22,20 @@ async function tryParseGithubErrorMessage(res: Response): Promise<string | undef
     }
 }
 
-export async function searchRepos({ query, signal, page, sort }: SearchReposParams): Promise<SearchReposResponse> {
+export async function searchRepos({ query, signal, page, sort, order }: SearchReposParams): Promise<SearchReposResponse> {
+    const params = new URLSearchParams({
+        q: query,
+        per_page: String(PAGE_SIZE),
+        page: String(page),
+    });
+
+    if (sort !== 'best-match') {
+        params.set('sort', sort);
+        params.set('order', order);
+    }
+
     const res = await fetch(
-        `${API_BASE}/search/repositories?q=${encodeURIComponent(query)}&per_page=${PAGE_SIZE}&page=${page}&sort=${sort}`,
+        `${API_BASE}/search/repositories?${params.toString()}`,
         { signal }
     )
 

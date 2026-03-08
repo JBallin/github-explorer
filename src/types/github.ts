@@ -15,4 +15,6 @@ export type GithubErrorResponse = {
     message?: string;
 }
 
-export type SortValue = 'best-match' | 'stars' | 'forks' | 'help-wanted-issues' | 'updated'
+export type SortValue = 'best-match' | 'stars' | 'forks' | 'help-wanted-issues' | 'updated';
+
+export type OrderValue = 'desc' | 'asc';

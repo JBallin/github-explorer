@@ -5,14 +5,15 @@ import SortSelect from './components/SortSelect';
 import Pagination from './components/Pagination';
 import useGithubSearch from './hooks/useGithubSearch'
 import useDebounce from './hooks/useDebounce';
-import type { SortValue } from './types/github';
+import type { OrderValue, SortValue } from './types/github';
 
 function App() {
   const [query, setQuery] = useState('');
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState<SortValue>('best-match');
+  const [order, setOrder] = useState<OrderValue>('desc');
   const debouncedQuery = useDebounce(query, 300).trim();
-  const { repos, loading, error, totalResults } = useGithubSearch({ query: debouncedQuery, page, sort });
+  const { repos, loading, error, totalResults } = useGithubSearch({ query: debouncedQuery, page, sort, order });
 
   const handleQueryChange = (value: string) => {
     setQuery(value);
@@ -20,6 +21,10 @@ function App() {
   };
   const handleSortChange = (value: SortValue) => {
     setSort(value);
+    setPage(1);
+  }
+  const handleOrderChange = (value: OrderValue) => {
+    setOrder(value);
     setPage(1);
   }
   const hasQuery = debouncedQuery.length > 0;
@@ -34,7 +39,7 @@ function App() {
     }}>
       <h1 style={{ marginBottom: 12 }}>GitHub Repo Explorer</h1>
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
-        <SortSelect value={sort} onChange={handleSortChange} />
+        <SortSelect sortValue={sort} orderValue={order} onSortChange={handleSortChange} onOrderChange={handleOrderChange} />
       </div>
       <Search query={query} onQueryChange={handleQueryChange} />
       <div style={{ marginTop: 16 }}>

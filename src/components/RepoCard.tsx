@@ -2,6 +2,7 @@ import type { Repo } from '../types/github';
 
 type RepoCardProps = {
     repo: Repo;
+    onSelect: (repoName: string) => void;
 }
 
 const DESCRIPTION_CUTOFF = 60
@@ -13,7 +14,7 @@ const getDescriptionPreview = (description: string | undefined) => {
     }
 }
 
-function RepoCard({ repo }: RepoCardProps) {
+function RepoCard({ repo, onSelect }: RepoCardProps) {
 
     return (
         <li
@@ -44,8 +45,33 @@ function RepoCard({ repo }: RepoCardProps) {
                 {getDescriptionPreview(repo.description?.trim()) || 'No description available.'}
             </p>
 
-            <div style={{ fontSize: 14, color: '#333' }}>
-                ⭐️ {repo.stargazers_count.toLocaleString()}
+            <div
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginTop: 10
+                }}
+            >
+                <div style={{ fontSize: 14, color: '#333' }}>
+                    ⭐️ {repo.stargazers_count.toLocaleString()}
+                </div>
+
+                <button
+                    onClick={() => onSelect(repo.full_name)}
+                    style={{
+                        padding: '6px 10px',
+                        border: '1px solid #d0d7de',
+                        borderRadius: 6,
+                        background: '#f6f8fa',
+                        color: '#24292f',
+                        fontSize: 13,
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                    }}
+                >
+                    More details
+                </button>
             </div>
         </li>
     )

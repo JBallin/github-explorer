@@ -3,6 +3,7 @@ import RepoList from './components/RepoList'
 import Search from './components/Search';
 import SortSelect from './components/SortSelect';
 import Pagination from './components/Pagination';
+import RepoDetailsModal from './components/RepoDetailsModal';
 import useGithubSearch from './hooks/useGithubSearch'
 import useDebounce from './hooks/useDebounce';
 import type { OrderValue, SortValue } from './types/github';
@@ -12,6 +13,7 @@ function App() {
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState<SortValue>('best-match');
   const [order, setOrder] = useState<OrderValue>('desc');
+  const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
   const debouncedQuery = useDebounce(query, 300).trim();
   const { repos, loading, error, totalResults } = useGithubSearch({ query: debouncedQuery, page, sort, order });
 
@@ -28,6 +30,7 @@ function App() {
     setPage(1);
   }
   const hasQuery = debouncedQuery.length > 0;
+  const selectedRepoData = repos.find((repo => repo.full_name === selectedRepo))
 
   return (
     <main style={{
@@ -43,7 +46,7 @@ function App() {
       </div>
       <Search query={query} onQueryChange={handleQueryChange} />
       <div style={{ marginTop: 16 }}>
-        <RepoList loading={loading} error={error} repos={repos} />
+        <RepoList loading={loading} error={error} repos={repos} onRepoSelect={(repoName: string) => setSelectedRepo(repoName)} />
       </div>
       {hasQuery && totalResults > 0 && (
         <Pagination
@@ -54,6 +57,7 @@ function App() {
           loading={loading}
         />
       )}
+      {selectedRepoData && <RepoDetailsModal repo={selectedRepoData} onClose={() => setSelectedRepo(null)} />}
     </main>
   )
 }

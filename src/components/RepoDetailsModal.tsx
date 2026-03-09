@@ -1,4 +1,5 @@
 import type { Repo } from '../types/github';
+import RepoContributorsDisplay from './RepoContributorsDisplay';
 
 type RepoDetailsModalProps = {
     repo: Repo;
@@ -32,8 +33,9 @@ function RepoDetailsModal({ repo, onClose }: RepoDetailsModalProps) {
             <div style={modalStyle} onClick={(e) => e.stopPropagation()}>
             <h2 id="repo-modal-title">Repo Details</h2>
             <p><a target="_blank" rel="noreferrer" href={repo.html_url}>{repo.full_name}</a></p>
-            <p>{repo.description}</p>
-            <button onClick={onClose}>Close</button>
+            <p>{repo.description || 'No description available.'}</p>
+            <RepoContributorsDisplay repo={repo.full_name} />
+            <button style={{ marginTop: 8 }} onClick={onClose}>Close</button>
             </div>
         </div>
     )

@@ -4,7 +4,7 @@ import Search from './components/Search';
 import SortSelect from './components/SortSelect';
 import Pagination from './components/Pagination';
 import RepoDetailsModal from './components/RepoDetailsModal';
-import useGithubSearch from './hooks/useGithubSearch'
+import useGithubSearch from './hooks/useGithubSearch';
 import useDebounce from './hooks/useDebounce';
 import type { OrderValue, SortValue } from './types/github';
 

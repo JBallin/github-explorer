@@ -1,4 +1,4 @@
-import type { SearchReposResponse, GithubErrorResponse, SortValue, OrderValue } from '../types/github';
+import type { SearchReposResponse, GithubErrorResponse, SortValue, OrderValue, RepoContributorsResponse } from '../types/github';
 
 type SearchReposParams = {
     query: string;
@@ -22,6 +22,18 @@ async function tryParseGithubErrorMessage(res: Response): Promise<string | undef
     }
 }
 
+async function fetchGithubJson<T>(url: string, signal?: AbortSignal): Promise<T> {
+  const res = await fetch(url, { signal });
+
+  if (!res.ok) {
+    const message = await tryParseGithubErrorMessage(res);
+    throw new Error(`GitHub API Error: ${res.status} ${message ?? res.statusText}`);
+  }
+
+  return (await res.json()) as T;
+}
+
+
 export async function searchRepos({ query, signal, page, sort, order }: SearchReposParams): Promise<SearchReposResponse> {
     const params = new URLSearchParams({
         q: query,
@@ -34,15 +46,9 @@ export async function searchRepos({ query, signal, page, sort, order }: SearchRe
         params.set('order', order);
     }
 
-    const res = await fetch(
-        `${API_BASE}/search/repositories?${params.toString()}`,
-        { signal }
-    )
+    return fetchGithubJson<SearchReposResponse>(`${API_BASE}/search/repositories?${params}`, signal);
+}
 
-    if (!res.ok) {
-        const message = await tryParseGithubErrorMessage(res);
-        throw new Error(`GitHub API Error: ${res.status} ${message ?? res.statusText}`)
-    }
-
-    return (await res.json()) as SearchReposResponse;
+export async function getRepoContributors(repoName: string, signal: AbortSignal): Promise<RepoContributorsResponse> {
+    return fetchGithubJson<RepoContributorsResponse>(`${API_BASE}/repos/${repoName}/contributors`, signal);
 }

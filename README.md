@@ -2,6 +2,8 @@
 
 A React + TypeScript app for searching GitHub repositories.
 
+Live demo: https://github-explorer-2.netlify.app
+
 ## Features
 
 - Search repositories by keyword (debounced input)

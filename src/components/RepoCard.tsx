@@ -4,7 +4,17 @@ type RepoCardProps = {
     repo: Repo;
 }
 
+const DESCRIPTION_CUTOFF = 60
+const getDescriptionPreview = (description: string | undefined) => {
+    if (description && description.length > DESCRIPTION_CUTOFF) {
+        return description.slice(0, DESCRIPTION_CUTOFF) + '...'
+    } else {
+        return description
+    }
+}
+
 function RepoCard({ repo }: RepoCardProps) {
+
     return (
         <li
             style={{
@@ -31,7 +41,7 @@ function RepoCard({ repo }: RepoCardProps) {
             </a> 
             
             <p style={{ margin: '6px 0', color: '#555' }}>
-                {repo.description?.trim() || 'No description available.'}
+                {getDescriptionPreview(repo.description?.trim()) || 'No description available.'}
             </p>
 
             <div style={{ fontSize: 14, color: '#333' }}>

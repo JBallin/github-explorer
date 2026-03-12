@@ -4,6 +4,8 @@ A React + TypeScript app for searching GitHub repositories.
 
 Live demo: https://github-explorer-2.netlify.app
 
+*AI used for styling. Practice project.*
+
 ## Features
 
 - Search repositories by keyword (debounced input)
@@ -39,6 +41,5 @@ npm run preview
 
 ## Notes
 
-- This is an interview-practice project.
 - GitHub API rate limits apply (unauthenticated requests).
 - In development, React Strict Mode may trigger duplicate fetches for effects; production behavior is normal.
